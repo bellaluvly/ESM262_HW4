@@ -204,7 +204,7 @@ summary(powerC)
 # next car (row 4)
 powerC = autopower(V=speeds, A = possible_cars$area[4], m=possible_cars$mass[4])
 # lets look at what we get
-summary(powerC)
+summary(powerD)
 
 # we could put this together
 powerall1 = cbind.data.frame(powerA, powerB, powerC, powerD)
