@@ -124,7 +124,7 @@ source("../ESM262_HW4/autopower.R")
 # generate a structure to store info on our possible cars
 possible_cars = data.frame(name = c("A","B","C","D"),mass=c(10000,65000,38000,5000), area = c(22,30,22,10))
 
-# first look at how results vary for mean speed say 100km/hr
+# first look at how results vary for mean speed say 80km/hr
 # do conversion from km to meters per second
 speed_base = 80 * 0.28
 
