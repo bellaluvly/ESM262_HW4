@@ -202,7 +202,7 @@ powerC = autopower(V=speeds, A = possible_cars$area[3], m=possible_cars$mass[3])
 summary(powerC)
 
 # next car (row 4)
-powerC = autopower(V=speeds, A = possible_cars$area[4], m=possible_cars$mass[4])
+powerD = autopower(V=speeds, A = possible_cars$area[4], m=possible_cars$mass[4])
 # lets look at what we get
 summary(powerD)
 
