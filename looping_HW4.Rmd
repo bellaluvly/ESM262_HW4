@@ -1,9 +1,9 @@
 
 ---
-title: 'Looping'
+title: "Looping"
 author: "Naomi Tague"
 date: "January, 2025"
-
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
