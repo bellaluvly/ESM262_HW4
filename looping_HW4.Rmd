@@ -348,7 +348,7 @@ colnames(powerall3)=possible_cars$name
 # plotting is the same as above
 
 # for plotting sometimes its useful to turn columns in to rows
-powerallr3 = powerall3 %>% pivot_longer(cols=everything(), names_to="car", values_to="power")
+powerallr3 = powerall3 |> pivot_longer(cols=everything(), names_to="car", values_to="power")
 head(powerallr3)
 
 # quick visualization
@@ -356,8 +356,8 @@ method3_plot = ggplot(powerallr3, aes(car,power, fill=car))+geom_boxplot()+ggtit
 
 ggarrange(method1_plot, method2_plot, method3_plot, nrow=3)
 
-powerall1 %>% map(mean)
-powerall2 %>% map(mean)
-powerall3 %>% map(mean)
+powerall1 |> map(mean)
+powerall2 |> map(mean)
+powerall3 |> map(mean)
 
 ```
