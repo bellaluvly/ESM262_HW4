@@ -15,88 +15,11 @@ library(ggpubr)
 library(ggplot2)
 library(viridis)
 ```
-# Other examples where you might need a *for* loop
-
-# Another Example
-
-Recall our annual yield of a crop function:
-
-
-$$ yield =  1.8*fertilizer^2 - 0.5*fertilizer  + 0.1*TP $$
-
-
-and TP is mean precipitation in cm
-
-
- Use a *for* loop to estimate the total yield after 10 years if
-
-  * fertilizer is normally distributed with mean of 5 and standard deviation of 0.5
-  * TP is 20cm
-  
-  
-Task 2: Compare results using a function to compute yield (I've provided it for you) 
-
-Task 3: modify your function so that it returns total yield if the user inputs a vector of fertilizer and a vector of precipitation
-
-Check that function returns the same result as your original *for* loop
-
-
-# Do on your own first before you check with this
-
-```{r cropyield}
-
-fert = rnorm(n=10, mean=5, sd=0.5)
-TP = 20
-
-crop = data.frame(fert=fert)
-crop$yield = NA
-for (yr in 1:10) {
-  crop$yield[yr] = 1.8*fert[yr]^2 - 0.5*fert[yr]  + 0.1*TP
-}
-
-sum(crop$yield)
-ggplot(crop, aes(fert, yield))+geom_point()+labs(y="yield", x="fertilizer")
-
-# as a function
-
-compute_yield = function(fert, TP) {
-  yield = 1.8*fert^2-0.5* fert + 0.1*TP
-  return(yield)
-}
-
-# apply function
-compute_yield(fert, TP)
-sum(compute_yield(fert, TP))
-
-# a different function that includes annual sum
-compute_total_yield = function(fert, TP) {
-  yield = 1.8*fert^2-0.5* fert + 0.1*TP
-  ty = sum(yield)
-  return(ty)
-}
-
-compute_total_yield(fert, TP)
-
-# useful error checking
-compute_total_yield = function(fert, TP) {
-  
-  fert = ifelse(fert < 0, return("fertilizer cannot be negative"), fert)
-   
-  
-  yield = 1.8*fert^2-0.5* fert + 0.1*TP
-  ty = sum(yield)
-  return(ty)
-}
-```
-
-
-
-
 
 
 # A more complex example of looping in R
 
-Just read through this (preview) and try to understand - We will go through in class!
+### Note, I edited this RMD with the required changes for HW #4 ### 
 
 Lets **scale** up from a single car to a group of cars on a highway
 and use our **autopower** function to estimate a distribution of power 
@@ -146,14 +69,14 @@ ggplot(possible_cars, aes(x=mass, y=power, fill=as.factor(area)))+geom_col()+lab
 
 # Building a highway
 
-What could be the total power consumed if there are 100 cars on this highway each hour,
-they are travelling at a range of speeds - mean is 100km/hr and speeds tend to
+What could be the total power consumed if there are 200 cars on this highway each hour,
+they are travelling at a range of speeds - mean is 80km/hr and speeds tend to
 be log-normally distributed)
 
 How would the total power consumed vary by car
-So if all cars are car A; OR all cars are car B OR all cars are car C
+So if all cars are car A; OR all cars are car B; OR all cars are car C; OR all cars are car D
 
-We will use *sample* here to generate speeds for our 100 cars and look at different ways to
+We will use *sample* here to generate speeds for our 200 cars and look at different ways to
 repeat power calculation for different cars
 
 * repeating by hand
@@ -170,7 +93,7 @@ possible_cars
 
 # use sample to generate a distribution of speeds
 
-# assume a log normal distribution of speeds with mean 100km/hr, and standard deviation that is 10% of the mean
+# assume a log normal distribution of speeds with mean 100km/hr, and standard deviation that is 10 km/min -> convert into m/s (using *0.277)
 
 # recall our function needs speed in m/s not km/hr so we will also do a conversion
 # lets get a sample of a 200 speeds- we could also do this by actually measuring speeds
@@ -190,6 +113,7 @@ plot(density(speeds), ylab="Distribution of Speeds in (m/s)")
 possible_cars[1,]
 
 # we could do it by hand
+# aka: needing to put in individual car
 powerA = autopower(V=speeds, A = possible_cars$area[1], m=possible_cars$mass[1])
 # lets look at what we get
 summary(powerA)
@@ -267,6 +191,7 @@ mean_speed = log(80*0.277)
 speeds = rlnorm(mean=mean_speed, sd=log(10*0.277), nsample)
 summary(speeds)
 
+
 plot(density(speeds), ylab="Distribution of Speeds in (m/s)")
 
 
@@ -290,6 +215,29 @@ head(powerall2b)
 head(powerall2)
 
 
+# for plotting sometimes its useful to turn columns in to rows
+powerallr2 = powerall2 |> pivot_longer(cols=everything(), names_to="car", values_to="power")
+head(powerallr2)
+
+# quick visualization
+
+method2_plot = ggplot(powerallr2, aes(car,power, fill=car))+geom_boxplot()+ggtitle("pmap")
+method2_plot+
+  ylim(0,2000000)
+method2_plot
+
+# put plots side by side
+# to confirm that they look similar
+ggarrange(method1_plot, method2_plot)
+
+# compare values
+head(powerallr2)
+head(powerallr1)
+
+# not exactly the same - why?
+# recall that we sample speeds!
+
+
 ```
 
 # Third - classic looping *for*
@@ -302,20 +250,20 @@ Lets do this one more time using a *for* loop
 ```{r withforloop}
 
 # the first part, generating speeds is the same
-# what is I want to estimate average power use given  each car
+# proceed with estimating average power use given  each car
 
 possible_cars
 
 # use sample to generate a distribution of speeds
 
-# assume a log normal distribution of speeds with mean 100km/hr
+# assume a log normal distribution of speeds with mean 80km/hr
 # recall our function needs speed in m/s not km/hr so we will also do a conversion
 # lets get a sample of a 200 speeds- we could also do this by actually measuring speeds
 
 nsample = 200
-mean_speed = log(100*0.277)
+mean_speed = log(80*0.277)
 
-speeds = rlnorm(mean=mean_speed, sd=0.1*mean_speed, nsample)
+speeds = rlnorm(mean=mean_speed, sd=log(10*0.277), nsample)
 summary(speeds)
 
 plot(density(speeds), ylab="Distribution of Speeds in (m/s)")
@@ -335,6 +283,7 @@ nrow(possible_cars)
 # for loops use an index - in this case "i" but you could use anything - it repeats
 # anything between the {} for each values of i between 1 and nrow(possible_car) (which is 3 in our case)
 
+
 # index in to a matrix (like powerall3) is by row and column powerall3[2,5] is 2nd row and 5th column
 for (i in 1:nrow(possible_cars)) {
   powerall3[,i] = autopower(A=possible_cars$area[i], m=possible_cars$mass[i], V=speeds)
@@ -352,7 +301,8 @@ powerallr3 = powerall3 |> pivot_longer(cols=everything(), names_to="car", values
 head(powerallr3)
 
 # quick visualization
-method3_plot = ggplot(powerallr3, aes(car,power, fill=car))+geom_boxplot()+ggtitle("For Loop")
+method3_plot = ggplot(powerallr3, aes(car,power, fill=car))+geom_boxplot()+ggtitle("For Loop")+
+    ylim(0,2000000)
 
 ggarrange(method1_plot, method2_plot, method3_plot, nrow=3)
 
